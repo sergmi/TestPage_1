@@ -345,7 +345,7 @@ var pizzaElementGenerator = function(i) {
   pizzaDescriptionContainer = document.createElement("div");
 
   pizzaContainer.classList.add("randomPizzaContainer");
-  pizzaContainer.style.width = "33.33%";
+  /**/pizzaContainer.style.width = "33.33%";
   pizzaContainer.style.height = "325px";
   pizzaContainer.id = "pizza" + i;
   pizzaImageContainer.classList.add("col-md-6");
@@ -389,38 +389,25 @@ var resizePizzas = function(size) {
 
   changeSliderLabel(size);
 
-  function determineDx (elem, size) {
-    var oldWidth = elem.offsetWidth;
-    var windowWidth = document.querySelector("#randomPizzas").offsetWidth;
-    var oldSize = oldWidth / windowWidth;
-
-    function sizeSwitcher (size) {
+	function sizeSwitcher (size) {
       switch(size) {
         case "1":
-          return 0.25;
+          return "25%";
         case "2":
-          return 0.3333;
+          return "33.33%";
         case "3":
-          return 0.5;
+          return "50%";
 
       }
     }
 
-    var newSize = sizeSwitcher(size);
-    var dx = (newSize - oldSize) * windowWidth;
-
-    return dx;
-  }
-
   function changePizzaSizes(size) {
 	var documentQuerySelectorAll=document.querySelectorAll(".randomPizzaContainer");
+	var newSize = sizeSwitcher(size);	
     for (var i = 0; i < documentQuerySelectorAll.length; i++) {
-      var dx = determineDx(documentQuerySelectorAll[i], size);
-      var newwidth = (documentQuerySelectorAll[i].offsetWidth + dx) + 'px';
-      document.querySelectorAll(".randomPizzaContainer")[i].style.width = newwidth;
+      document.querySelectorAll(".randomPizzaContainer")[i].style.width = newSize;
     }
   }
-
   changePizzaSizes(size);
 };
 
@@ -429,34 +416,12 @@ for (var i = 2; i < 100; i++) {
   pizzasDiv.appendChild(pizzaElementGenerator(i));
 }
 
-var frame = 0;
-
-
-function logAverageFrame(times) {
-  var numberOfEntries = times.length;
-  var sum = 0;
-  for (var i = numberOfEntries - 1; i > numberOfEntries - 11; i--) {
-    sum = sum + times[i].duration;
-  }
-  console.log("Average time to generate last 10 frames: " + sum / 10 + "ms");
-}
-
 function updatePositions() {
-  frame++;
-  window.performance.mark("mark_start_frame");
-
   var items = document.querySelectorAll('.mover');
   var documentBodyScrollTop=document.body.scrollTop;
   for (var i = 0; i < items.length; i++) {
     var phase = Math.sin((documentBodyScrollTop / 1250) + (i % 5));
     items[i].style.left = items[i].basicLeft + 100 * phase + 'px';
-  }
-
-  window.performance.mark("mark_end_frame");
-  window.performance.measure("measure_frame_duration", "mark_start_frame", "mark_end_frame");
-  if (frame % 10 === 0) {
-    var timesToUpdatePosition = window.performance.getEntriesByName("measure_frame_duration");
-    logAverageFrame(timesToUpdatePosition);
   }
 }
 
